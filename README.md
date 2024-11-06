@@ -62,8 +62,8 @@ The Smart Greenhouse project is designed to:
 
 1. **Clone the Repository**:
    ```bash
-   git clone https://github.com/yourusername/smart-greenhouse.git
-   cd smart-greenhouse
+   https://github.com/ghaith-jbali/Smart-Greenhouse-IoT-System.git
+   cd Smart-Greenhouse-IoT-System
    ```
 
 2. **Install Python Dependencies**:
