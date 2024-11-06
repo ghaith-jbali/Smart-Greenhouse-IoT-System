@@ -1,0 +1,957 @@
+[
+    {
+        "id": "dd915477f6bd30ad",
+        "type": "tab",
+        "label": "weather",
+        "disabled": false,
+        "info": "",
+        "env": []
+    },
+    {
+        "id": "eb760bbb.8e5ec",
+        "type": "inject",
+        "z": "dd915477f6bd30ad",
+        "name": "Refresh Timer",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "3600",
+        "crontab": "",
+        "once": true,
+        "onceDelay": "",
+        "topic": "Refresh Timer",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 320,
+        "y": 160,
+        "wires": [
+            [
+                "e54c1170.c13488",
+                "f6657c5c.2621a8"
+            ]
+        ]
+    },
+    {
+        "id": "74cb77c.92dd108",
+        "type": "ui_button",
+        "z": "dd915477f6bd30ad",
+        "name": "Weather Refresh",
+        "group": "e77f4cb8e5a2277f",
+        "order": 8,
+        "width": 2,
+        "height": 1,
+        "passthru": true,
+        "label": "Refresh",
+        "tooltip": "Weather Refresh",
+        "color": "",
+        "bgcolor": "",
+        "className": "",
+        "icon": "fa-refresh",
+        "payload": "true",
+        "payloadType": "bool",
+        "topic": "",
+        "topicType": "str",
+        "x": 310,
+        "y": 380,
+        "wires": [
+            [
+                "e54c1170.c13488",
+                "f6657c5c.2621a8",
+                "80018de0961ea877"
+            ]
+        ]
+    },
+    {
+        "id": "4d90e53a.37962c",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 15,
+        "width": 3,
+        "height": 1,
+        "name": "Condition Txt",
+        "label": "",
+        "format": "{{msg.payload.detail}}",
+        "layout": "col-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1190,
+        "y": 160,
+        "wires": []
+    },
+    {
+        "id": "89a4bed9.5b467",
+        "type": "function",
+        "z": "dd915477f6bd30ad",
+        "name": "Prepare Dashboard Data",
+        "func": "var windDirection = {};\nvar windDirectionIcon = {};\nvar windSpeed = {};\nvar windSpeedIcon = {};\nvar sunRise = {};\nvar sunSet = {};\nvar conditionIcon = {};\nvar temp = {};\nvar humidity = {};\nvar pressure = {};\nvar clouds = {};\n\nvar date = new Date ();\n\n/* function for converting meteorogical degree to text */\n\nvar degToCard = function(deg){\nif (deg>11.25 && deg<=33.75){\nreturn \"ССВ\";\n  }else if (deg>33.75 && deg<56.25){\nreturn \"СВ\";\n  }else if (deg>56.25 && deg<78.75){\nreturn \"ВСВ\";\n  }else if (deg>78.75 && deg<101.25){\nreturn \"В\";\n  }else if (deg>101.25 && deg<123.75){\nreturn \"ВЮВ\";\n  }else if (deg>123.75 && deg<146.25){\nreturn \"ЮВ\";\n  }else if (deg>146.25 && deg<168.75){\nreturn \"ЮЮВ\";\n  }else if (deg>168.75 && deg<191.25){\nreturn \"Ю\";\n  }else if (deg>191.25 && deg<213.75){\nreturn \"ЮЮВ\";\n  }else if (deg>213.75 && deg<236.25){\nreturn \"ЮЗ\";\n  }else if (deg>236.25 && deg<258.75){\nreturn \"ЗЮЗ\";\n  }else if (deg>258.75 && deg<281.25){\nreturn \"З\";\n  }else if (deg>281.25 && deg<303.75){\nreturn \"ЗСЗ\";\n  }else if (deg>303.75 && deg<326.25){\nreturn \"СЗ\";\n  }else if (deg>326.25 && deg<348.75){\nreturn \"ССЗ\";\n  }else{\nreturn \"С\"; \n  }\n}\n\n\n/* Function for Time Conversions */\n\nfunction timeConverter(UNIX_timestamp){\n  var a = new Date(UNIX_timestamp * 1000);\n  var hour = a.getHours();\n  var min = a.getMinutes();\n  if (min < 10) {min = \"0\" + min;}\n    else {min = min;}\n  var sec = a.getSeconds();\n  if (sec < 10) {sec = \"0\" + sec;}\n    else {sec = sec;}\n    \n  var time = hour + ':' + min + ':' + sec ;\n  return time;\n}\n\nconditionIcon.topic = \"ConditionIcon\";\nconditionIcon.payload = \"fa-4x wi wi-owm-\" + msg.payload.icon;\n\nwindDirection.topic = \"WindDirection\";\nwindDirection.payload = degToCard(msg.payload.winddirection);\n\nwindSpeed.topic = \"WindSpeed\";\nwindSpeed.payload = msg.payload.windspeed +  \" m/s\"; /* \" + windDirection.payload; */\n\nwindSpeedIcon.topic = \"WindSpeedIcon\";\nwindSpeedIcon.payload = \"wi wi-darksky-wind\";\n\nsunRise.topic = \"SunRise\";\nsunRise.payload = timeConverter(msg.payload.sunrise);\n\nsunSet.topic = \"SunRet\";\nsunSet.payload = timeConverter(msg.payload.sunset);\n\ntemp.topic = \"Temperature\";\ntemp.payload = msg.payload.tempc + \" °C\"\n\nhumidity.topic = \"Humidity\";\nhumidity.payload = msg.payload.humidity + \"%\"\n\npressure.topic = \"Pressure\";\npressure.payload = msg.payload.pressure + \" hPа\"\n\nclouds.topic = \"Clouds\";\nclouds.payload = msg.payload.clouds + \"%\"\n\nreturn [conditionIcon, windSpeedIcon, windSpeed, windDirection, windDirectionIcon, sunRise, sunSet, temp, humidity, pressure, clouds];\n",
+        "outputs": 11,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 830,
+        "y": 320,
+        "wires": [
+            [
+                "d0990bb3.6ee1f8"
+            ],
+            [
+                "6bfd9bef.141194"
+            ],
+            [
+                "49e2e33e.486c14"
+            ],
+            [
+                "013b92c4aac04e1d"
+            ],
+            [],
+            [
+                "393c1d0b.05766a"
+            ],
+            [
+                "d2011150.f678f"
+            ],
+            [
+                "508ca3a0e91cc26b"
+            ],
+            [
+                "5941a5326f994775"
+            ],
+            [
+                "a6aca279c3870261"
+            ],
+            [
+                "ba051d21ea89c037"
+            ]
+        ]
+    },
+    {
+        "id": "49e2e33e.486c14",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 5,
+        "width": 2,
+        "height": 1,
+        "name": "WindSpeed",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1190,
+        "y": 280,
+        "wires": []
+    },
+    {
+        "id": "393c1d0b.05766a",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 14,
+        "width": 2,
+        "height": 1,
+        "name": "Sunrise",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "<div style=\"display: flex;height: 100%;justify-content: flex-start;align-items: center;\"> <i class=\"wi wi-owm-01d\"></i>&nbsp;<i class=\"fa fa-arrow-up\"></i> </div> ",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1180,
+        "y": 360,
+        "wires": []
+    },
+    {
+        "id": "d2011150.f678f",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 11,
+        "width": 2,
+        "height": 1,
+        "name": "Sunset",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1180,
+        "y": 400,
+        "wires": []
+    },
+    {
+        "id": "a767f2cc.5f3478",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "Sunrise Icon",
+        "order": 13,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n<i class=\"wi wi-owm-01d\"></i>&nbsp;<i class=\"fa fa-arrow-up\"></i>\n</div> ",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1330,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "7dfa615d.50546",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "Sunset Icon",
+        "order": 10,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n<i class=\"wi wi-owm-01d\"></i>&nbsp;<i class=\"fa fa-arrow-down\"></i>\n</div> ",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1330,
+        "y": 400,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e54c1170.c13488",
+        "type": "openweathermap",
+        "z": "dd915477f6bd30ad",
+        "name": "Current Weather",
+        "wtype": "current",
+        "lon": "",
+        "lat": "",
+        "city": "Ariana",
+        "country": "Tunisie",
+        "language": "en",
+        "x": 580,
+        "y": 160,
+        "wires": [
+            [
+                "89a4bed9.5b467",
+                "4d90e53a.37962c"
+            ]
+        ]
+    },
+    {
+        "id": "6bfd9bef.141194",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WindSpeed Icon",
+        "order": 4,
+        "width": 1,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: left;align-items: center;\">\n<i class=\"fa-2x wi wi-darksky-wind\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1200,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "d0990bb3.6ee1f8",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "Condition Icon",
+        "order": 1,
+        "width": 3,
+        "height": 2,
+        "format": "<div style=\"display: flex;height: 500%;justify-content: center;align-items: center;\">\n<i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1200,
+        "y": 200,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "f6657c5c.2621a8",
+        "type": "openweathermap",
+        "z": "dd915477f6bd30ad",
+        "name": "5 Day Forecast",
+        "wtype": "forecast",
+        "lon": "",
+        "lat": "",
+        "city": "Ariana",
+        "country": "Tunisie",
+        "language": "en",
+        "x": 580,
+        "y": 680,
+        "wires": [
+            [
+                "25b2dc06.cd7bdc",
+                "e58a247.3094b58",
+                "c5b71946.ca4de"
+            ]
+        ]
+    },
+    {
+        "id": "25b2dc06.cd7bdc",
+        "type": "function",
+        "z": "dd915477f6bd30ad",
+        "name": "Prepare Forecast Icon",
+        "func": "var wfcIcon1 = {};\nvar wfcIcon2 = {}; \nvar wfcIcon3 = {};\nvar wfcIcon4 = {};\nvar wfcIcon5 = {};\nvar wfcIcon6 = {};\nvar wfcIcon7 = {};\nvar wfcIcon8 = {};\n\n\nvar date = new Date ();\n\n/* Function for Time Conversions */\n\nfunction timeConverter(UNIX_timestamp){\n  var a = new Date(UNIX_timestamp * 1000);\n  var hour = a.getHours();\n  var min = a.getMinutes();\n  if (min < 10) {min = \"0\" + min;}\n    else {min = min;}\n  var sec = a.getSeconds();\n  if (sec < 10) {sec = \"0\" + sec;}\n    else {sec = sec;}\n    \n  var time = hour + ':' + min; /* + ':' + sec ;*/\n  return time;\n}\n\n/* Convert OpenWeeather Map Icon to https://erikflowers.github.io/weather-icons/ */\n\n/*\nconst owIconMap = new Map();\n\nowIconMap.set('01d', 'wi-day-sunny'); // clear sky\nowIconMap.set('02d', 'wi-day-cloudy'); // few clouds\nowIconMap.set('03d', 'wi-cloud'); // scattered clouds\nowIconMap.set('04d', 'wi-cloudy'); // broken clouds\nowIconMap.set('09d', 'wi-day-showers'); // shower rain\nowIconMap.set('10d', 'wi-day-rain'); // rain\nowIconMap.set('11d', 'wi-thunderstorm'); // thunderstorm\nowIconMap.set('13d', 'wi-snow'); // snow\nowIconMap.set('50d', 'wi-fog'); // mist\nowIconMap.set('01n', 'wi-night-clear'); // clear sky\nowIconMap.set('02n', 'wi-night-alt-cloudy'); // few clouds\nowIconMap.set('03n', 'wi-cloud'); // scattered clouds\nowIconMap.set('04n', 'wi-cloudy'); // broken clouds\nowIconMap.set('09n', 'wi-night-alt-showers'); // shower rain\nowIconMap.set('10n', 'wi-night-alt-rain'); // rain\nowIconMap.set('11n', 'wi-thunderstorm'); // thunderstorm\nowIconMap.set('13n', 'wi-snow'); // snow\nowIconMap.set('50n', 'wi-fog'); // mist\n*/\nwfcIcon1.topic = msg.payload[0].dt_txt;\nwfcIcon1.payload = \"fa-2x wi wi-owm-\" + msg.payload[0].weather[0].icon;\n\nwfcIcon2.topic = msg.payload[1].dt_txt;\nwfcIcon2.payload = \"fa-2x wi wi-owm-\" +msg.payload[1].weather[0].icon;\n\nwfcIcon3.topic = msg.payload[2].dt_txt;\nwfcIcon3.payload = \"fa-2x wi wi-owm-\" + msg.payload[2].weather[0].icon;\n\nwfcIcon4.topic = msg.payload[3].dt_txt;\nwfcIcon4.payload = \"fa-2x wi wi-owm-\" + msg.payload[3].weather[0].icon;\n\nwfcIcon5.topic = msg.payload[4].dt_txt;\nwfcIcon5.payload = \"fa-2x wi wi-owm-\" + msg.payload[4].weather[0].icon;\n\nwfcIcon6.topic = msg.payload[5].dt_txt;\nwfcIcon6.payload = \"fa-2x wi wi-owm-\" + msg.payload[5].weather[0].icon;\n\nwfcIcon7.topic = msg.payload[6].dt_txt;\nwfcIcon7.payload = \"fa-2x wi wi-owm-\" + msg.payload[6].weather[0].icon;\n\nwfcIcon8.topic = msg.payload[7].dt_txt;\nwfcIcon8.payload = \"fa-2x wi wi-owm-\" + msg.payload[7].weather[0].icon;\n\n//owIconMap.clear(); //freeing resource\n\nreturn [wfcIcon1, wfcIcon2, wfcIcon3, wfcIcon4, wfcIcon5, wfcIcon6, wfcIcon7, wfcIcon8];",
+        "outputs": 8,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 680,
+        "wires": [
+            [
+                "39139188.be2256"
+            ],
+            [
+                "c24820ec.48ca8"
+            ],
+            [
+                "764a58c0.442438"
+            ],
+            [
+                "6eab6954.c57d38"
+            ],
+            [
+                "c756059d.18796"
+            ],
+            [
+                "53046826.3645"
+            ],
+            [
+                "229014e6.b0e14c"
+            ],
+            [
+                "fd1a001d.2fc35"
+            ]
+        ]
+    },
+    {
+        "id": "39139188.be2256",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 1",
+        "order": 28,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 620,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c24820ec.48ca8",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 2",
+        "order": 29,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 660,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "764a58c0.442438",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 3",
+        "order": 30,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 700,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "6eab6954.c57d38",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 4",
+        "order": 31,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 740,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c756059d.18796",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 5",
+        "order": 24,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 780,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "53046826.3645",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 6",
+        "order": 25,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 820,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "229014e6.b0e14c",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 7",
+        "order": 27,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 860,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "fd1a001d.2fc35",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "WFc Icon 8",
+        "order": 26,
+        "width": 2,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n    <i class=\"{{msg.payload}}\"></i>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 900,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e58a247.3094b58",
+        "type": "function",
+        "z": "dd915477f6bd30ad",
+        "name": "Prepare Forecast Data",
+        "func": "var fcdata = {};\n\nfcdata.payload = {\n  forecast: {\n    dt00: {\n      dt_txt: msg.payload[0].dt_txt,\n      temp_min: msg.payload[0].main.temp_min,\n      temp_max: msg.payload[0].main.temp_max,\n      temp: msg.payload[0].main.temp,\n      desc: msg.payload[0].weather[0].description\n    },\n    dt01: {\n      dt_txt: msg.payload[1].dt_txt,\n      temp_min: msg.payload[1].main.temp_min,\n      temp_max: msg.payload[1].main.temp_max,\n      temp: msg.payload[1].main.temp,\n      desc: msg.payload[1].weather[0].description\n    },\n    dt02: {\n      dt_txt: msg.payload[2].dt_txt,\n      temp_min: msg.payload[2].main.temp_min,\n      temp_max: msg.payload[2].main.temp_max,\n      temp: msg.payload[2].main.temp,\n      desc: msg.payload[2].weather[0].description\n    },\n    dt03: {\n      dt_txt: msg.payload[3].dt_txt,\n      temp_min: msg.payload[3].main.temp_min,\n      temp_max: msg.payload[3].main.temp_max,\n      temp: msg.payload[3].main.temp,\n      desc: msg.payload[3].weather[0].description\n    },\n    dt04: {\n      dt_txt: msg.payload[4].dt_txt,\n      temp_min: msg.payload[4].main.temp_min,\n      temp_max: msg.payload[4].main.temp_max,\n      temp: msg.payload[4].main.temp,\n      desc: msg.payload[4].weather[0].description\n    },\n    dt05: {\n      dt_txt: msg.payload[5].dt_txt,\n      temp_min: msg.payload[5].main.temp_min,\n      temp_max: msg.payload[5].main.temp_max,\n      temp: msg.payload[5].main.temp,\n      desc: msg.payload[5].weather[0].description\n    },\n    dt06: {\n      dt_txt: msg.payload[6].dt_txt,\n      temp_min: msg.payload[6].main.temp_min,\n      temp_max: msg.payload[6].main.temp_max,\n      temp: msg.payload[6].main.temp,\n      desc: msg.payload[6].weather[0].description\n    },\n    dt07: {\n      dt_txt: msg.payload[7].dt_txt,\n      temp_min: msg.payload[7].main.temp_min,\n      temp_max: msg.payload[7].main.temp_max,\n      temp: msg.payload[7].main.temp,\n      desc: msg.payload[7].weather[0].description\n    }\n  }\n}\n\n\n\nreturn fcdata;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 840,
+        "y": 960,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "770400c.08ade8",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "Forecast",
+        "order": 23,
+        "width": 16,
+        "height": 1,
+        "format": "<div layout=\"row\" layout-align=\"space-around start\" ng-repeat=\"data in msg.payload.row\">\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell01}}</span>\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell02}}</span>\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell03}}</span>\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell04}}</span>\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell05}}</span>\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell06}}</span>\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell07}}</span>\n  <span flex style=\"color: white; font-size: 15px; font-weight: bold; text-align: center;\">{{data.cell08}}</span>\n</div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1180,
+        "y": 1040,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "c5b71946.ca4de",
+        "type": "function",
+        "z": "dd915477f6bd30ad",
+        "name": "Prepare forecast for UI widget",
+        "func": "var forecastData = {};\n\n// prepare forecast data for CSS based ui widget\n\nforecastData.payload = {\n\trow: {\n\t\t// time  \n\t\tdata01: {\n\t\t\tcell01: msg.payload[0].dt_txt.substring(11, 13),\n\t\t\tcell02: msg.payload[1].dt_txt.substring(11, 13),\n\t\t\tcell03: msg.payload[2].dt_txt.substring(11, 13),\n\t\t\tcell04: msg.payload[3].dt_txt.substring(11, 13),\n\t\t\tcell05: msg.payload[4].dt_txt.substring(11, 13),\n\t\t\tcell06: msg.payload[5].dt_txt.substring(11, 13),\n\t\t\tcell07: msg.payload[6].dt_txt.substring(11, 13),\n\t\t\tcell08: msg.payload[7].dt_txt.substring(11, 13)\n\t\t},\n\t\t// temperature\n\t\tdata02: {\n\t\t\tcell01: Math.round(msg.payload[0].main.temp) + \" °C\",\n\t\t\tcell02: Math.round(msg.payload[1].main.temp) + \" °C\",\n\t\t\tcell03: Math.round(msg.payload[2].main.temp) + \" °C\",\n\t\t\tcell04: Math.round(msg.payload[3].main.temp) + \" °C\",\n\t\t\tcell05: Math.round(msg.payload[4].main.temp) + \" °C\",\n\t\t\tcell06: Math.round(msg.payload[5].main.temp) + \" °C\",\n\t\t\tcell07: Math.round(msg.payload[6].main.temp) + \" °C\",\n\t\t\tcell08: Math.round(msg.payload[7].main.temp) + \" °C\"\n\t\t}\n\t}\n}\n\nreturn forecastData;",
+        "outputs": 1,
+        "timeout": "",
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 870,
+        "y": 1040,
+        "wires": [
+            [
+                "770400c.08ade8"
+            ]
+        ]
+    },
+    {
+        "id": "508ca3a0e91cc26b",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 2,
+        "width": 4,
+        "height": 1,
+        "name": "Temp",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1170,
+        "y": 440,
+        "wires": []
+    },
+    {
+        "id": "013b92c4aac04e1d",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 6,
+        "width": 1,
+        "height": 1,
+        "name": "WindSpeedDir",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-center",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1200,
+        "y": 320,
+        "wires": []
+    },
+    {
+        "id": "5941a5326f994775",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 20,
+        "width": 3,
+        "height": 1,
+        "name": "Humidity",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1180,
+        "y": 480,
+        "wires": []
+    },
+    {
+        "id": "a6aca279c3870261",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 18,
+        "width": 3,
+        "height": 1,
+        "name": "Pressure",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1180,
+        "y": 520,
+        "wires": []
+    },
+    {
+        "id": "ba051d21ea89c037",
+        "type": "ui_text",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "order": 22,
+        "width": 3,
+        "height": 1,
+        "name": "Clouds",
+        "label": "",
+        "format": "{{msg.payload}}",
+        "layout": "row-left",
+        "className": "",
+        "style": false,
+        "font": "",
+        "fontSize": "",
+        "color": "#000000",
+        "x": 1180,
+        "y": 560,
+        "wires": []
+    },
+    {
+        "id": "95cf9a85678be8a3",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "Humidity Icon",
+        "order": 19,
+        "width": 1,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n<i class=\"fa fa-shower\"></i>\n</div> ",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1340,
+        "y": 480,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "9fc538f79aaaf0f9",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "Pressure Icon",
+        "order": 17,
+        "width": 1,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n<i class=\"fa fa-sort-amount-desc\"></i>\n</div> ",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1340,
+        "y": 520,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "e6915ec1710a9324",
+        "type": "ui_template",
+        "z": "dd915477f6bd30ad",
+        "group": "e77f4cb8e5a2277f",
+        "name": "Cloud Icon",
+        "order": 21,
+        "width": 1,
+        "height": 1,
+        "format": "<div style=\"display: flex;height: 100%;justify-content: center;align-items: center;\">\n<i class=\"fa fa-cloud\"></i>\n</div> ",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": false,
+        "templateScope": "local",
+        "className": "",
+        "x": 1330,
+        "y": 560,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "80018de0961ea877",
+        "type": "link out",
+        "z": "dd915477f6bd30ad",
+        "name": "link out 7",
+        "mode": "link",
+        "links": [
+            "d158c1a036a73e22"
+        ],
+        "x": 515,
+        "y": 380,
+        "wires": []
+    },
+    {
+        "id": "15c77c1e0bfddf38",
+        "type": "inject",
+        "z": "dd915477f6bd30ad",
+        "name": "",
+        "props": [
+            {
+                "p": "payload"
+            },
+            {
+                "p": "topic",
+                "vt": "str"
+            }
+        ],
+        "repeat": "",
+        "crontab": "",
+        "once": true,
+        "onceDelay": 0.1,
+        "topic": "",
+        "payload": "true",
+        "payloadType": "bool",
+        "x": 110,
+        "y": 380,
+        "wires": [
+            [
+                "74cb77c.92dd108"
+            ]
+        ]
+    },
+    {
+        "id": "c8bea2271bf5cec6",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "e77f4cb8e5a2277f",
+        "order": 3,
+        "width": 2,
+        "height": 1
+    },
+    {
+        "id": "3b75b552738a204a",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "e77f4cb8e5a2277f",
+        "order": 7,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "cabafa1c704243fa",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "e77f4cb8e5a2277f",
+        "order": 9,
+        "width": 4,
+        "height": 1
+    },
+    {
+        "id": "c1b03788e0da5cae",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "e77f4cb8e5a2277f",
+        "order": 12,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "6401dc5d071ff47e",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "e77f4cb8e5a2277f",
+        "order": 16,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "edbc845550eb5058",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "a208d264e7a6c612",
+        "order": 10,
+        "width": 1,
+        "height": 1
+    },
+    {
+        "id": "4696b19068da47ae",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "a213133f8a5ac348",
+        "order": 2,
+        "width": 8,
+        "height": 1
+    },
+    {
+        "id": "65a59ed1df0ce3f1",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "a213133f8a5ac348",
+        "order": 6,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "1dd964ad9bfd25dd",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "a213133f8a5ac348",
+        "order": 10,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "d1976fc0bfe915c9",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "a213133f8a5ac348",
+        "order": 14,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "e1ab11a472243ee2",
+        "type": "ui_spacer",
+        "z": "dd915477f6bd30ad",
+        "name": "spacer",
+        "group": "a213133f8a5ac348",
+        "order": 18,
+        "width": 3,
+        "height": 1
+    },
+    {
+        "id": "e77f4cb8e5a2277f",
+        "type": "ui_group",
+        "name": "Weather",
+        "tab": "5b2c18ed0c47db32",
+        "order": 2,
+        "disp": true,
+        "width": "16",
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a208d264e7a6c612",
+        "type": "ui_group",
+        "name": "control",
+        "tab": "5b2c18ed0c47db32",
+        "order": 2,
+        "disp": true,
+        "width": 16,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "a213133f8a5ac348",
+        "type": "ui_group",
+        "name": "auto",
+        "tab": "5b2c18ed0c47db32",
+        "order": 3,
+        "disp": true,
+        "width": 16,
+        "collapse": false,
+        "className": ""
+    },
+    {
+        "id": "5b2c18ed0c47db32",
+        "type": "ui_tab",
+        "name": "smart planter",
+        "icon": "home",
+        "order": 3,
+        "disabled": false,
+        "hidden": false
+    }
+]
