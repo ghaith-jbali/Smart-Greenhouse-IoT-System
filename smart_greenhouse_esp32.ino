@@ -22,8 +22,8 @@ int ventState = LOW;
 
 int low_power_mode = 0;
 
-const char* ssid = "Airbox-1AB5";  
-const char* password = "8rD84S4P"; 
+const char* ssid = xxxxx;  
+const char* password = xxxxxx; 
 const char* mqtt_server = "test.mosquitto.org";
 WiFiClient espclient;
 
