@@ -1,5 +1,3 @@
----
-
 # Smart Greenhouse IoT System
 
 This repository contains the Smart Greenhouse IoT System, which integrates IoT technologies, AI-driven insights, and real-time data visualization to manage greenhouse conditions. The system can monitor environmental factors, automate responses, and offer interactive plant care advice using an AI assistant. 
@@ -97,15 +95,3 @@ POST /ask
 
 - **API Key Security**: Store API keys and sensitive information in environment variables, and exclude them from the repository using `.gitignore`.
 - **Data Files**: Keep `conversation_history.json` and other log files private or ensure they are properly managed if shared.
-
-## License
-This project is licensed under the MIT License. See `LICENSE` for details.
-
-## Future Enhancements
-- **Additional Sensors**: Include CO2 and soil pH monitoring for more detailed plant health data.
-- **Advanced AI Integration**: Use more comprehensive plant care data to enhance AI responses.
-- **Cloud Features**: Implement remote access and cloud storage for long-term data retention and remote monitoring.
-
-For any issues or questions, please visit the [GitHub Repository](https://github.com/ghaith-jbali/Smart-Greenhouse-IoT-System.git).
-
----
